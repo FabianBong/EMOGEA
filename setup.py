@@ -6,12 +6,12 @@ setuptools.setup(
     author="Fabian Bong",
     author_email="Fabian.Bong@dal.ca",
     description="Implements the EMOGEA algorithm as described in ...",
-    packages=setuptools.find_packages(),
-    install_requires=[],
-    classifiers=[
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 3',
+    packages=["EMOGEA"],
+    install_requires=[
+        "numpy",
+        "pandas",
     ],
     include_package_data=True,
-    package_data={'': ['data/*.csv']},
+    license='MIT',
+    package_data={'': ['EMOGEA/data/*.csv']},
 )
