@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name="EMOGEA",
-    version="1.0.0",
+    version="1.0.1",
     author="Fabian Bong",
     author_email="Fabian.Bong@dal.ca",
     description="Implements the EMOGEA algorithm as described in ...",

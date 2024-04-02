@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-
+import time
 
 def ml_projection(
     expression_matrix: pd.DataFrame,
@@ -9,7 +9,8 @@ def ml_projection(
     max_iterations: int = 2000,
     tolerance: float = 1e-6,
     verbose: bool = True,
-) -> dict:
+) -> [pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+
     """
     Maximum likelihood projection of expression matrix onto a lower dimensional space.
 
@@ -44,6 +45,10 @@ def ml_projection(
     estimated_matrix : pd.DataFrame
         The estimated matrix.
     """
+
+    # get current time
+    start_time = time.time()
+
 
     # assign to variables
     X = expression_matrix.to_numpy()
@@ -90,12 +95,12 @@ def ml_projection(
             flg = 0
 
         if verbose:
-            print("Iteration: ", iter, "Objective: ", sobj, "Tolerance: ", lam)
+            print("Iteration: ", iter, "Converging to: ", lam, "Current: ", sobj)
 
     # compute estimated values
     estimated_matrix = (U @ S @ V.T).T
     
-    # set colnames 
+    # set column names
     estimated_matrix = pd.DataFrame(estimated_matrix, index=expression_matrix.index, columns=expression_matrix.columns)
 
     # make U, S and V dataframes with row/column names
@@ -103,5 +108,8 @@ def ml_projection(
     S = pd.DataFrame(S, index=range(1, pc + 1), columns=range(1, pc + 1))
     V = pd.DataFrame(V, index=expression_matrix.index, columns=range(1, pc + 1))
 
-    # retrun
+    # print execution time
+    print("Execution time (in seconds): ", time.time() - start_time) if verbose else None
+
+    # return what we need
     return U,S,V, estimated_matrix

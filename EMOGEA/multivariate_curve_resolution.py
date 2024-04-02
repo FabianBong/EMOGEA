@@ -2,19 +2,66 @@ import numpy as np
 from .compute_gene_profiles import compute_gene_profiles_func
 from EMOGEA.simplisma import simplisma
 import pandas as pd
-
+import time
 
 def multivariate_curve_resolution(
     expression_matrix: pd.DataFrame,
     residual_matrix: pd.DataFrame=None,
-    number_of_components=15,
-    init_algorithm="simplisma",
-    max_iterations=2000,
-    tolerance=0.0009,
-    random_seed=1,
-    compute_gene_profiles=True,
-    verbose=True,
-):
+    number_of_components : int =15,
+    init_algorithm : str ="simplisma",
+    max_iterations : int =2000,
+    tolerance : float =0.0009,
+    random_seed : int =1,
+    compute_gene_profiles : bool =True,
+    verbose : bool =True,
+) -> [pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+
+    """
+    Multivariate curve resolution algorithm for curve resolution of expression data.
+
+    Parameters
+    ----------
+    expression_matrix : pd.DataFrame
+        A pandas dataframe with genes as rows and samples as columns.
+
+    residual_matrix : pd.DataFrame
+        A pandas dataframe with genes as rows and samples as columns.
+
+    number_of_components : int
+        Number of components to project onto.
+
+    init_algorithm : str
+        Initialization algorithm.
+
+    max_iterations : int
+        Maximum number of iterations.
+
+    tolerance : float
+        Tolerance for convergence.
+
+    random_seed : int
+        Random seed.
+
+    compute_gene_profiles : bool
+        Compute gene profiles.
+
+    verbose : bool
+        Print progress.
+
+    Returns
+    -------
+    P : pd.DataFrame
+        The profile matrix.
+    C : pd.DataFrame
+        The contribution matrix.
+    Xcalc : pd.DataFrame
+        The estimated matrix.
+    gene_profiles : pd.DataFrame
+        The gene profiles.
+    """
+
+    # get start time
+    start_time = time.time()
 
     X = expression_matrix.to_numpy()
     Xres = residual_matrix.to_numpy() if residual_matrix is not None else None
@@ -38,8 +85,8 @@ def multivariate_curve_resolution(
 
     # initialize P
     if init_algorithm == "simplisma":
-        simplisma_out = simplisma(expression_matrix, number_of_components=ncomp)
-        Prof = simplisma_out["Pinit"]
+        C,P = simplisma(expression_matrix, number_of_components=ncomp)
+        Prof = P
     else:
         np.random.seed(random_seed)
         itmp = np.random.choice(np.arange(m), size=m)
@@ -193,7 +240,7 @@ def multivariate_curve_resolution(
                 P[i, :] = P[i, :] / euclidian_distance(P[i, :])
             #P = P / np.linalg.norm(P, axis=1)[:, np.newaxis]
 
-            # calculte rmsdif and update icnt
+            # calculate rmsdif and update icnt
             rmsdif = rmse(P, Pold)
 
             # calculate rms differences
@@ -208,7 +255,7 @@ def multivariate_curve_resolution(
 
         Xcalc = (C @ P).T
 
-        # set rownames and colnames
+        # set row names and column names
         Xcalc = pd.DataFrame(Xcalc, index=expression_matrix.index, columns=expression_matrix.columns)
 
 
@@ -220,6 +267,9 @@ def multivariate_curve_resolution(
     if compute_gene_profiles:
         print("Computing gene profiles") if verbose else None
         gene_profiles = compute_gene_profiles_func(expression_matrix, C)
+
+    # print execution time
+    print("Execution time (in seconds): ", time.time() - start_time) if verbose else None
 
     # create output list
     return P, C, Xcalc, gene_profiles

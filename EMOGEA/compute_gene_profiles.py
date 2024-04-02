@@ -5,7 +5,23 @@ import numpy as np
 def compute_gene_profiles_func(
     expression_matrix: pd.DataFrame,
     C: pd.DataFrame,
-):
+) -> pd.DataFrame:
+
+    """
+    Compute gene profiles from the expression matrix and the components C.
+
+    Parameters
+    ----------
+    expression_matrix : pd.DataFrame
+        The expression matrix with genes as rows and samples as columns.
+    C : pd.DataFrame
+        The components from the MCR algorithm.
+
+    Returns
+    -------
+    gene_profiles : pd.DataFrame
+        The gene profiles.
+    """
 
     # define cosine similarity function
     def cosine_similarity(a, b):
@@ -22,10 +38,10 @@ def compute_gene_profiles_func(
         for j in range(ngenes):
             angles[i, j] = cosine_similarity(C.iloc[:, i], Xorg[:, j])
 
-    # set colnames of angles 
+    # set column names of angles
     angles = pd.DataFrame(angles, columns=expression_matrix.index)
 
-    # remvoe any rows that contain nan
+    # remove any rows that contain nan
     angles = angles.dropna()
 
     # Generate the gene profiles

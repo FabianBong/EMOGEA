@@ -6,7 +6,7 @@ def simplisma(
     expression_matrix: pd.DataFrame,
     number_of_components: int = 15,
     noise_factor: float = 0.009,
-) -> dict:
+) -> [np.array, np.array]:
     """
     Simple-to-use interactive self-modeling mixture analysis (SIMPLISMA) method implementation.
 
@@ -93,4 +93,4 @@ def simplisma(
     S = data.T @ C @ np.linalg.inv(C.T @ C)
     P = S.T
 
-    return {"Cinit": C, "Pinit": P}
+    return C,P

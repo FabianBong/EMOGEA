@@ -1,8 +1,8 @@
 import pandas as pd
 
-def load_sample():
+def load_sample() -> [pd.DataFrame, pd.DataFrame]:
 
-	'''
+	"""
 	Load sample data from csv files
 
 	Returns
@@ -12,7 +12,7 @@ def load_sample():
 
 	meta_data: pd.DataFrame
 		Meta data
-	'''
+	"""
 
 	df = pd.read_csv("EMOGEA/data/expressionData.csv", index_col=1)
 

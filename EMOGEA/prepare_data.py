@@ -8,7 +8,7 @@ def prepare_data(
     sample_column: str = "ID",
     condition_column: str = "condition",
     apply_log_transformation: bool = True,
-) -> dict:
+) -> [pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     """
     This function prepares the data to be passed to the ml projection function.
 
